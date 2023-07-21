@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
-
 @Entity
 @NoArgsConstructor
 @Setter
@@ -16,8 +15,9 @@ public class Priority {
     private String title;
     private String color;
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Id
+    @GeneratedValue
     @Column(name = "id")
     public Long getId() {
         return id;

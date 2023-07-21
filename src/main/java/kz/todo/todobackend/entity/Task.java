@@ -18,9 +18,10 @@ public class Task {
     private Priority priority;
     private Category category;
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Id
-    @Column(name = "id", nullable = false)
+    @GeneratedValue
+    @Column(name = "id")
     public Long getId() {
         return id;
     }

@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
-
 @Entity
 @NoArgsConstructor
 @Setter
@@ -17,8 +16,9 @@ public class Category {
     private Long completedCount;
     private Long uncompletedCount;
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Id
+    @GeneratedValue
     @Column(name = "id")
     public Long getId() {
         return id;
