@@ -1,7 +1,11 @@
 package kz.todo.todobackend.controller;
 
+import kz.todo.todobackend.entity.Category;
 import kz.todo.todobackend.entity.Priority;
 import kz.todo.todobackend.repository.PriorityRepository;
+import kz.todo.todobackend.search.CategorySearchValues;
+import kz.todo.todobackend.search.PrioritySearchValues;
+import kz.todo.todobackend.service.PriorityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,18 +17,18 @@ import java.util.NoSuchElementException;
 @RequestMapping("/priority")
 public class PriorityController {
 
-    private PriorityRepository priorityRepository;
+    private PriorityService priorityService;
 
-    public PriorityController(PriorityRepository priorityRepository) {
+    public PriorityController(PriorityService priorityService) {
 
-        this.priorityRepository = priorityRepository;
+        this.priorityService = priorityService;
 
     }
 
     @GetMapping("/all")
     public List<Priority> findAll() {
 
-        return priorityRepository.findAllByOrderByIdAsc();
+        return priorityService.findAll();
 
     }
 
@@ -44,7 +48,7 @@ public class PriorityController {
         }
 
 
-        return ResponseEntity.ok(priorityRepository.save(priority));
+        return ResponseEntity.ok(priorityService.add(priority));
 
     }
 
@@ -63,7 +67,7 @@ public class PriorityController {
             return new ResponseEntity("missed param: color", HttpStatus.NOT_ACCEPTABLE);
         }
 
-        return ResponseEntity.ok(priorityRepository.save(priority));
+        return ResponseEntity.ok(priorityService.update(priority));
     }
 
     @GetMapping("/id/{id}")
@@ -73,7 +77,7 @@ public class PriorityController {
 
         try {
 
-            priority = priorityRepository.findById(id).get();
+            priority = priorityService.findById(id);
 
         } catch (NoSuchElementException e) {
 
@@ -91,8 +95,8 @@ public class PriorityController {
         Priority priority = null;
         try {
 
-            priority = priorityRepository.findById(id).get();
-            priorityRepository.deleteById(priority.getId());
+            priority = priorityService.findById(id);
+            priorityService.deleteById(priority.getId());
 
         } catch (NoSuchElementException e) {
 
@@ -103,6 +107,11 @@ public class PriorityController {
 
         return ResponseEntity.ok(priority);
 
+    }
+    @PostMapping("/search")
+    private ResponseEntity<List<Priority>> search(@RequestBody PrioritySearchValues categorySearchValue){
+
+        return ResponseEntity.ok(priorityService.findByTitle(categorySearchValue.getText()));
     }
 
 

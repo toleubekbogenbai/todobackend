@@ -3,6 +3,9 @@ package kz.todo.todobackend.controller;
 import kz.todo.todobackend.entity.Category;
 import kz.todo.todobackend.entity.Priority;
 import kz.todo.todobackend.repository.CategoryRepository;
+import kz.todo.todobackend.search.CategorySearchValues;
+import kz.todo.todobackend.service.CategoryService;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,16 +17,16 @@ import java.util.NoSuchElementException;
 @RequestMapping("/category")
 public class CategoryController {
 
-    private CategoryRepository categoryRepository;
+    private CategoryService categoryService;
 
-    public CategoryController(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
     }
 
     @GetMapping("/all")
     public List<Category> findAll() {
 
-        return categoryRepository.findAllByOrderByTitleAsc();
+        return categoryService.findAllByOrderByTitleAsc();
     }
 
     @PostMapping("/add")
@@ -37,7 +40,7 @@ public class CategoryController {
             return new ResponseEntity("missed param: title", HttpStatus.NOT_ACCEPTABLE);
         }
 
-        return ResponseEntity.ok(categoryRepository.save(category));
+        return ResponseEntity.ok(categoryService.add(category));
     }
 
     @PutMapping("/update")
@@ -52,7 +55,7 @@ public class CategoryController {
         }
 
 
-        return ResponseEntity.ok(categoryRepository.save(category));
+        return ResponseEntity.ok(categoryService.update(category));
     }
 
     @GetMapping("/id/{id}")
@@ -61,7 +64,7 @@ public class CategoryController {
         Category category = null;
         try {
 
-            category = categoryRepository.findById(id).get();
+            category = categoryService.findById(id);
 
         } catch (NoSuchElementException e) {
             e.printStackTrace();
@@ -75,20 +78,19 @@ public class CategoryController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Category> deleteByID(@PathVariable Long id) {
 
-        Category category = null;
         try {
-
-            category = categoryRepository.findById(id).get();
-            categoryRepository.deleteById(category.getId());
-
-        } catch (NoSuchElementException e) {
-
+            categoryService.deleteById(id);
+        }catch (EmptyResultDataAccessException e){
             e.printStackTrace();
-            return new ResponseEntity("id " + id + " not found", HttpStatus.NOT_ACCEPTABLE);
-
+            return new ResponseEntity("id="+id+" not found", HttpStatus.NOT_ACCEPTABLE);
         }
 
-        return ResponseEntity.ok(category);
+        return new ResponseEntity(HttpStatus.OK);
 
+    }
+    @PostMapping("/search")
+    private ResponseEntity<List<Category>> search(@RequestBody CategorySearchValues categorySearchValue){
+
+        return ResponseEntity.ok(categoryService.findByTitle(categorySearchValue.getText()));
     }
 }
