@@ -15,6 +15,7 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/category")
+@CrossOrigin(origins = "http://localhost:4200")
 public class CategoryController {
 
     private CategoryService categoryService;
@@ -91,6 +92,6 @@ public class CategoryController {
     @PostMapping("/search")
     private ResponseEntity<List<Category>> search(@RequestBody CategorySearchValues categorySearchValue){
 
-        return ResponseEntity.ok(categoryService.findByTitle(categorySearchValue.getText()));
+        return ResponseEntity.ok(categoryService.findByTitle(categorySearchValue.getTitle()));
     }
 }

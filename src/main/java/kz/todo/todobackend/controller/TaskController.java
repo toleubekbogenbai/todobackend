@@ -16,6 +16,7 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/task")
+@CrossOrigin(origins = "http://localhost:4200")
 public class TaskController {
 
     private final TaskService taskService;
@@ -98,7 +99,7 @@ public class TaskController {
     @PostMapping("/search")
     public ResponseEntity<Page<Task>> search(@RequestBody TaskSearchValues taskSearchValues) {
 
-        String text = taskSearchValues.getTitle() != null ? taskSearchValues.getTitle() : null;
+        String title = taskSearchValues.getTitle() != null ? taskSearchValues.getTitle() : null;
 
         Integer completed = taskSearchValues.getCompleted() != null ? taskSearchValues.getCompleted() : null;
 
@@ -120,7 +121,7 @@ public class TaskController {
 
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sort);
 
-        Page result = taskService.findByParams(text, completed, priorityId, categoryId, pageRequest);
+        Page result = taskService.findByParams(title, completed, priorityId, categoryId, pageRequest);
 
         return ResponseEntity.ok(result);
 
